@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 export interface Doctor {
@@ -9,6 +10,11 @@ export interface Doctor {
   firstName: string;
   lastName: string;
   availability: string[];
+  absences: {
+    date: string;
+    period: "Morning" | "Afternoon";
+  }[];
+  canCover: boolean;
 }
 
 interface DoctorFormProps {
@@ -18,6 +24,7 @@ interface DoctorFormProps {
 export const DoctorForm = ({ onDoctorAdded }: DoctorFormProps) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [canCover, setCanCover] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +38,15 @@ export const DoctorForm = ({ onDoctorAdded }: DoctorFormProps) => {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       availability: [],
+      absences: [],
+      canCover,
     };
 
     onDoctorAdded(newDoctor);
     toast.success("Doctor added successfully");
     setFirstName("");
     setLastName("");
+    setCanCover(false);
   };
 
   return (
@@ -65,6 +75,19 @@ export const DoctorForm = ({ onDoctorAdded }: DoctorFormProps) => {
               onChange={(e) => setLastName(e.target.value)}
               className="w-full"
             />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="canCover"
+              checked={canCover}
+              onCheckedChange={(checked) => setCanCover(checked as boolean)}
+            />
+            <label
+              htmlFor="canCover"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Available to cover absences
+            </label>
           </div>
           <Button type="submit" className="w-full">
             Continue
